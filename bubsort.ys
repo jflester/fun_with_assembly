@@ -1,0 +1,84 @@
+MAIN:  irmovl $0x1000, %esp
+       
+
+
+
+STRCMP:	irmovl $0x1000, %esp
+	call MAKE1
+	call MAKE2
+	call COMP
+	irmovl $10, %eax
+	wrch %eax
+	halt
+
+MAKE1:	irmovl ARRAY1, %eax
+	irmovl $32, %edx
+	irmovl $4, %esi
+
+readln:rdch %ebx
+	rrmovl %ebx, %ecx
+	subl %edx, %ecx
+	je NEXT
+	rmmovl %ebx, 0(%eax)
+	addl %esi, %eax
+	jmp readln
+
+MAKE2:	irmovl ARRAY2, %eax
+	irmovl $4, %esi
+	irmovl $10, %edx
+	jmp readln
+
+NEXT:	ret
+
+COMP:	irmovl ARRAY1, %eax
+	irmovl ARRAY2, %ebx
+
+LOOP:	mrmovl 0(%eax), %ecx
+	mrmovl 0(%ebx), %edx
+	rrmovl %edx, %esi
+	subl %ecx, %esi
+	jl NEGONE
+	rrmovl %ecx, %edi
+	subl %edx, %edi
+	jl POSONE
+	irmovl $0, %edx
+	addl %ecx, %edx
+	je EQUALZERO
+	irmovl $4, %ecx
+	addl %ecx, %eax
+	addl %ecx, %ebx
+	jmp LOOP
+
+NEGONE:	irmovl $1, %edi
+	wrint %edi
+	ret
+
+POSONE:	irmovl $-1, %edi
+	wrint %edi
+	ret
+
+EQUALZERO:irmovl $0, %edi
+	  wrint %edi
+	  ret
+
+ARRAY1:	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+
+ARRAY2:	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0

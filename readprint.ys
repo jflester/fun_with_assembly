@@ -1,0 +1,51 @@
+MAIN:	irmovl $0x1000, %esp # initialize stack
+	irmovl $0, %edi
+	call readln
+	halt
+
+# read in a newline-terminated string, store at memory pointed to
+# by %eax w/ null termination, but not newline. 
+readln:	pushl   %esi
+	pushl	%ebx
+	pushl	%ecx
+	pushl	%edx
+	pushl	%eax		# save start of string
+	irmovl	$4, %esi
+	irmovl ARRAY, %eax
+
+readln1:rdch	%ebx # reads in line, puts in array
+	rrmovl	%ebx, %ecx
+	irmovl	$10,  %edx	
+	subl	%edx,  %ecx
+	je NEXT
+	rmmovl	%ebx, 0(%eax)
+	addl	%esi, %eax
+	jmp	readln1
+
+NEXT:	rmmovl %edx, 0(%eax)
+	irmovl ARRAY, %eax
+
+PRINT:	irmovl $10, %edx # prints out the line that was read in
+	mrmovl 0(%eax), %esi
+	subl %esi, %edx
+	je PRINT1
+	mrmovl 0(%eax), %ebx
+	wrch %ebx
+	irmovl $4, %esi
+	addl %esi, %eax
+	jmp PRINT
+
+PRINT1:	irmovl $10, %edx # prints newline at end
+	wrch %edx
+
+readln2:irmovl	$0, %ebx	
+	rmmovl	%ebx, 0(%eax)	#null-terminate
+	popl	%eax		# get saved string start
+	popl	%edx  		# saved
+	popl	%ecx  		# saved
+	popl	%ebx  		# saved
+	popl	%esi  		# saved
+	ret
+
+.align 4
+ARRAY:.long 0

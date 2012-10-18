@@ -1,0 +1,49 @@
+FIBMAIN: irmovl $0x1000, %esp
+	 rdint %eax # store n in eax
+	 irmovl $0, %ebx
+	 pushl %eax # push param onto stack
+	 call FIB
+
+	 wrint %ebx
+	 irmovl $10, %edx
+	 wrch %edx # write newline
+	 halt
+
+FIB:	 pushl %ebp
+	 rrmovl %esp, %ebp
+	 mrmovl 8(%ebp), %eax # param in eax
+	 
+	 irmovl $1, %edx
+
+	 andl %eax, %eax # bitwise and
+	 je END # if 0
+	 
+	 subl %eax, %edx
+	 je END1 # if 1
+
+	 irmovl $1, %edx
+	 rrmovl %eax, %ecx
+	 subl %edx, %ecx # call FIB on (n-1)
+	 pushl %ecx
+	 call FIB
+	 popl %ecx
+	 mrmovl 8(%ebp), %eax # param in eax
+
+	 irmovl $2, %edx
+	 rrmovl %eax, %ecx
+	 subl %edx, %ecx # call FIB on (n-2)
+	 pushl %ecx
+	 call FIB
+	 popl %ecx
+
+	 jmp END
+
+END1:	 irmovl $1, %edx # if one
+	 addl %edx, %ebx
+	 rrmovl %ebp, %esp
+	 popl %ebp
+	 ret
+
+END:	 rrmovl %ebp, %esp #if zero or done
+	 popl %ebp
+	 ret
